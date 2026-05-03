@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Acceso Denegado — 403</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #7f1d1d;
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+        }
+        .code  { font-size: 5rem; font-weight: 900; color: #ef4444; line-height: 1; }
+        h1     { color: #f8fafc; font-size: 1.4rem; margin: 1rem 0 0.5rem; }
+        p      { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; }
+        strong { color: #fca5a5; }
+        .btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.7rem 1.5rem;
+            background: #1d4ed8;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background .2s;
+        }
+        .btn:hover { background: #1e40af; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="code">403</div>
+    <h1>Acceso Denegado</h1>
+    <p>
+        El usuario <strong sec:authentication="name"></strong>
+        no tiene los permisos necesarios para acceder a este recurso.
+        Esta acción requiere el rol <strong>ADMIN</strong>.
+    </p>
+    <a class="btn" th:href="@{/dashboard}">← Volver al Dashboard</a>
+</div>
+</body>
+</html>
