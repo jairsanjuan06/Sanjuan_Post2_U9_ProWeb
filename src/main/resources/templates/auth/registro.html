@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Registro — Seguridad Web</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+        .logo { text-align: center; margin-bottom: 2rem; }
+        .logo h1 { color: #f8fafc; font-size: 1.5rem; font-weight: 700; }
+        .logo p  { color: #94a3b8; font-size: 0.85rem; margin-top: 0.3rem; }
+        .badge {
+            display: inline-block;
+            background: #065f46;
+            color: #6ee7b7;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 999px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        label { display: block; color: #cbd5e1; font-size: 0.875rem; margin-bottom: 0.4rem; }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            margin-bottom: 0.3rem;
+            transition: border-color .2s;
+        }
+        input.is-invalid { border-color: #ef4444; margin-bottom: 0; }
+        input:focus { outline: none; border-color: #10b981; }
+        .field-error {
+            color: #f87171;
+            font-size: 0.78rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .field-ok { margin-bottom: 1.25rem; }
+        button[type="submit"] {
+            width: 100%;
+            padding: 0.875rem;
+            background: #059669;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+            margin-top: 0.5rem;
+        }
+        button[type="submit"]:hover { background: #047857; }
+        .link-row {
+            text-align: center;
+            margin-top: 1.25rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        .link-row a { color: #34d399; text-decoration: none; }
+        .link-row a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">
+        <span class="badge">Nuevo Usuario</span>
+        <h1>Crear Cuenta</h1>
+        <p>Unidad 9 — Spring Security</p>
+    </div>
+
+    <form th:action="@{/registro}" th:object="${usuario}" method="post">
+
+        <!-- Nombre -->
+        <label for="nombre">Nombre completo</label>
+        <div th:classappend="${#fields.hasErrors('nombre')} ? '' : 'field-ok'">
+            <input type="text" id="nombre" th:field="*{nombre}"
+                   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                   placeholder="Tu nombre" required/>
+            <span class="field-error" th:if="${#fields.hasErrors('nombre')}"
+                  th:errors="*{nombre}"></span>
+        </div>
+
+        <!-- Correo -->
+        <label for="email">Correo electrónico</label>
+        <div th:classappend="${#fields.hasErrors('email')} ? '' : 'field-ok'">
+            <input type="email" id="email" th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email')} ? 'is-invalid'"
+                   placeholder="correo@ejemplo.com" required/>
+            <span class="field-error" th:if="${#fields.hasErrors('email')}"
+                  th:errors="*{email}"></span>
+        </div>
+
+        <!-- Contraseña — th:field NO hace binding automático del tipo password
+             para evitar repoblado en el HTML. Usamos name manual. -->
+        <label for="contrasenia">Contraseña</label>
+        <div class="field-ok">
+            <input type="password" id="contrasenia" name="contrasenia"
+                   placeholder="Mínimo 6 caracteres" required minlength="6"/>
+        </div>
+
+        <!-- Token CSRF inyectado automáticamente por Thymeleaf + Spring Security -->
+        <button type="submit">Crear cuenta</button>
+    </form>
+
+    <div class="link-row">
+        ¿Ya tienes cuenta? <a th:href="@{/login}">Inicia sesión</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Panel Admin — Seguridad Web</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        nav {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .brand { font-size: 1rem; font-weight: 700; color: #f8fafc; }
+        .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .btn {
+            padding: 0.4rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: background .2s;
+        }
+        .btn-ghost { background: #374151; color: #d1d5db; border: 1px solid #4b5563; }
+        .btn-ghost:hover { background: #4b5563; }
+        .btn-logout { background: #450a0a; color: #fca5a5; border: 1px solid #7f1d1d; }
+        .btn-logout:hover { background: #7f1d1d; }
+        main { max-width: 1000px; margin: 2.5rem auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 2rem; }
+        .page-header h1 { font-size: 1.75rem; color: #f8fafc; }
+        .page-header p  { color: #64748b; margin-top: 0.3rem; }
+        .stat-bar {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 2rem;
+        }
+        .stat span { display: block; }
+        .stat .label { font-size: 0.75rem; color: #64748b; text-transform: uppercase; letter-spacing:.05em; }
+        .stat .value { font-size: 1.5rem; font-weight: 700; color: #f8fafc; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        th {
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: 0.875rem 1.25rem;
+            text-align: left;
+        }
+        td {
+            padding: 0.875rem 1.25rem;
+            border-top: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        tr:hover td { background: #263148; }
+        .badge {
+            display: inline-block;
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-admin { background: #4c1d95; color: #c4b5fd; }
+        .badge-user  { background: #0c4a6e; color: #7dd3fc; }
+        .badge-on  { background: #052e16; color: #86efac; }
+        .badge-off { background: #450a0a; color: #fca5a5; }
+        .empty { text-align: center; color: #64748b; padding: 2rem; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <span class="brand">🛡 Panel de Administración</span>
+    <div class="nav-actions">
+        <a class="btn btn-ghost" th:href="@{/dashboard}">← Dashboard</a>
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="btn btn-logout" type="submit">Cerrar sesión</button>
+        </form>
+    </div>
+</nav>
+
+<main>
+    <div class="page-header">
+        <h1>Gestión de Usuarios</h1>
+        <p>Sesión activa: <span sec:authentication="name"></span> · Rol: ADMIN</p>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="stat-bar">
+        <div class="stat">
+            <span class="label">Total usuarios</span>
+            <span class="value" th:text="${usuarios.size()}">0</span>
+        </div>
+        <div class="stat">
+            <span class="label">Administradores</span>
+            <span class="value"
+                  th:text="${#lists.size(usuarios.?[rol == 'ROLE_ADMIN'])}">0</span>
+        </div>
+        <div class="stat">
+            <span class="label">Usuarios activos</span>
+            <span class="value"
+                  th:text="${#lists.size(usuarios.?[activo == true])}">0</span>
+        </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Hash (primeros 20 chars)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="${#lists.isEmpty(usuarios)}">
+                <td colspan="6" class="empty">No hay usuarios registrados.</td>
+            </tr>
+            <tr th:each="u : ${usuarios}">
+                <td th:text="${u.id}"></td>
+                <td th:text="${u.nombre}"></td>
+                <td th:text="${u.email}"></td>
+                <td>
+                    <span class="badge badge-admin" th:if="${u.rol == 'ROLE_ADMIN'}">Admin</span>
+                    <span class="badge badge-user"  th:if="${u.rol == 'ROLE_USER'}">User</span>
+                </td>
+                <td>
+                    <span class="badge badge-on"  th:if="${u.activo}">Activo</span>
+                    <span class="badge badge-off" th:unless="${u.activo}">Inactivo</span>
+                </td>
+                <!-- Muestra solo los primeros 20 caracteres del hash BCrypt como evidencia -->
+                <td th:text="${#strings.substring(u.contrasenia, 0, 20) + '...'}">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>
